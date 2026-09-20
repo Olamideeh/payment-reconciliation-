@@ -35,9 +35,6 @@ public class ReconciliationBatch {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "batch_id", nullable = false)
-    private ReconciliationBatch batch;
 
     private LocalDateTime completedAt;
 
