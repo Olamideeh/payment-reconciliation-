@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: payrecon-postgres
+    environment:
+      POSTGRES_DB: payrecon_db
+      POSTGRES_USER: payrecon_user
+      POSTGRES_PASSWORD: payrecon_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - payrecon_postgres_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer:latest
+    container_name: payrecon-adminer
+    ports:
+      - "8083:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  payrecon_postgres_data:
