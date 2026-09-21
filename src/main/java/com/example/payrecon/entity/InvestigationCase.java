@@ -44,6 +44,8 @@ public class InvestigationCase {
     @Column(length = 2000)
     private String reviewComment;
 
+    private String investigatedBy;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
