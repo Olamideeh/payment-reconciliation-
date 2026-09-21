@@ -13,7 +13,8 @@ import com.example.payrecon.dto.ReconciliationResultResponse;
 import com.example.payrecon.entity.ReconciliationResult;
 import com.example.payrecon.entity.TransactionRecord;
 import com.example.payrecon.service.ReconciliationEngineService;
-
+import com.example.payrecon.dto.ReconciliationSummaryResponse;
+import com.example.payrecon.service.ReconciliationQueryService;
 import java.util.List;
 @RestController
 @RequestMapping("/api/reconciliations")
@@ -22,6 +23,7 @@ public class ReconciliationController {
 
     private final ReconciliationUploadService uploadService;
     private final ReconciliationEngineService engineService;
+    private final ReconciliationQueryService queryService;
     @PostMapping(
             value = "/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -96,6 +98,14 @@ public class ReconciliationController {
 
                 result.getStatus(),
                 result.isRequiresInvestigation()
+        );
+    }
+    @GetMapping("/{batchId}/summary")
+    public ResponseEntity<ReconciliationSummaryResponse>
+    getSummary(@PathVariable Long batchId) {
+
+        return ResponseEntity.ok(
+                queryService.getSummary(batchId)
         );
     }
 }
