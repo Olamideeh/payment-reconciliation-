@@ -74,7 +74,7 @@ public class ReconciliationEngineService {
                         ));
 
         // 5. Collect every reference from both files
-        Set<String> references = new HashSet<>();
+        Set<String> references = new TreeSet<>();
 
         references.addAll(internalTransactions.keySet());
         references.addAll(providerTransactions.keySet());
