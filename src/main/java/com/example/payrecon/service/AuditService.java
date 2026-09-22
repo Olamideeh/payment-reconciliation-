@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.example.payrecon.dto.AuditLogResponse;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import com.example.payrecon.enums.AuditAction;
 @Service
 @RequiredArgsConstructor
 public class AuditService {
@@ -32,14 +34,42 @@ public class AuditService {
         auditLog.setDetails(details);
 
         auditLogRepository.save(auditLog);
-    }
-    @Transactional(readOnly = true)
-    public List<AuditLogResponse> getAllAuditLogs() {
+    }@Transactional(readOnly = true)
+    public Page<AuditLogResponse> getAllAuditLogs(
+            AuditAction action,
+            int page,
+            int size
+    ) {
+        if (page < 0) {
+            throw new IllegalArgumentException(
+                    "Page number cannot be negative"
+            );
+        }
 
-        return auditLogRepository
-                .findAllByOrderByCreatedAtDesc()
-                .stream()
-                .map(auditLog -> new AuditLogResponse(
+        if (size < 1 || size > 100) {
+            throw new IllegalArgumentException(
+                    "Page size must be between 1 and 100"
+            );
+        }
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(
+                        Sort.Direction.DESC,
+                        "createdAt"
+                )
+        );
+
+        Page<AuditLog> auditLogs = action == null
+                ? auditLogRepository.findAll(pageable)
+                : auditLogRepository.findAllByAction(
+                action,
+                pageable
+        );
+
+        return auditLogs.map(auditLog ->
+                new AuditLogResponse(
                         auditLog.getId(),
                         auditLog.getAction(),
                         auditLog.getEntityType(),
@@ -47,7 +77,7 @@ public class AuditService {
                         auditLog.getPerformedBy(),
                         auditLog.getDetails(),
                         auditLog.getCreatedAt()
-                ))
-                .toList();
+                )
+        );
     }
 }

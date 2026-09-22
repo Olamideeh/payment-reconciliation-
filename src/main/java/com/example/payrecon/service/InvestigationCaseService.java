@@ -7,10 +7,13 @@ import com.example.payrecon.enums.CaseStatus;
 import com.example.payrecon.exception.ResourceNotFoundException;
 import com.example.payrecon.repository.InvestigationCaseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.payrecon.dto.StartInvestigationRequest;
-import java.util.List;
 import com.example.payrecon.dto.SubmitResolutionRequest;
 import com.example.payrecon.dto.ReviewResolutionRequest;
 import com.example.payrecon.enums.AuditAction;
@@ -22,17 +25,40 @@ public class InvestigationCaseService {
     private final AuditService auditService;
 
     @Transactional(readOnly = true)
-    public List<InvestigationCaseResponse> getCases(
-            CaseStatus status
+    public Page<InvestigationCaseResponse> getCases(
+            CaseStatus status,
+            int page,
+            int size
     ) {
+        if (page < 0) {
+            throw new IllegalArgumentException(
+                    "Page number cannot be negative"
+            );
+        }
 
-        List<InvestigationCase> cases = status == null
-                ? caseRepository.findAll()
-                : caseRepository.findAllByStatus(status);
+        if (size < 1 || size > 100) {
+            throw new IllegalArgumentException(
+                    "Page size must be between 1 and 100"
+            );
+        }
 
-        return cases.stream()
-                .map(this::mapToResponse)
-                .toList();
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(
+                        Sort.Direction.DESC,
+                        "createdAt"
+                )
+        );
+
+        Page<InvestigationCase> cases = status == null
+                ? caseRepository.findAll(pageable)
+                : caseRepository.findAllByStatus(
+                status,
+                pageable
+        );
+
+        return cases.map(this::mapToResponse);
     }
 
     private InvestigationCaseResponse mapToResponse(
