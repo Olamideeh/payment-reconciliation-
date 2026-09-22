@@ -1,18 +1,13 @@
 package com.example.payrecon.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
-public record StartInvestigationRequest(
-
-        @NotBlank(message = "Officer name is required")
-        String officer,
+@Getter
+@Setter
+public class StartInvestigationRequest {
 
         @NotBlank(message = "Investigation note is required")
-        @Size(
-                max = 2000,
-                message = "Investigation note cannot exceed 2000 characters"
-        )
-        String investigationNote
-) {
+        private String investigationNote;
 }

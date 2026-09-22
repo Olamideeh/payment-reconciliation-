@@ -10,12 +10,9 @@ import java.util.Optional;
 public interface InvestigationCaseRepository
         extends JpaRepository<InvestigationCase, Long> {
 
-    Optional<InvestigationCase> findByReconciliationResult_Id(
-            Long reconciliationResultId
-    );
+    Optional<InvestigationCase> findByResult_Id(Long resultId);
 
     List<InvestigationCase> findAllByStatus(CaseStatus status);
 
-    List<InvestigationCase>
-    findAllByReconciliationResult_Batch_Id(Long batchId);
+    List<InvestigationCase> findAllByResult_Batch_Id(Long batchId);
 }

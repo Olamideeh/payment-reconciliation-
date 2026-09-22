@@ -9,6 +9,7 @@ import com.example.payrecon.service.InvestigationCaseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,58 +22,76 @@ public class InvestigationCaseController {
     private final InvestigationCaseService caseService;
 
     @GetMapping
-    public ResponseEntity<List<InvestigationCaseResponse>>
-    getCases(
-            @RequestParam(required = false)
-            CaseStatus status
+    public ResponseEntity<List<InvestigationCaseResponse>> getCases(
+            @RequestParam(required = false) CaseStatus status
     ) {
 
         return ResponseEntity.ok(
                 caseService.getCases(status)
         );
     }
+
     @PatchMapping("/{caseId}/start")
-    public ResponseEntity<InvestigationCaseResponse>
-    startInvestigation(
+    public ResponseEntity<InvestigationCaseResponse> startInvestigation(
             @PathVariable Long caseId,
-            @Valid @RequestBody StartInvestigationRequest request
+            @Valid @RequestBody StartInvestigationRequest request,
+            Authentication authentication
     ) {
 
         return ResponseEntity.ok(
-                caseService.startInvestigation(caseId, request)
+                caseService.startInvestigation(
+                        caseId,
+                        authentication.getName(),
+                        request
+                )
         );
     }
+
     @PatchMapping("/{caseId}/submit")
-    public ResponseEntity<InvestigationCaseResponse>
-    submitResolution(
+    public ResponseEntity<InvestigationCaseResponse> submitResolution(
             @PathVariable Long caseId,
-            @Valid @RequestBody SubmitResolutionRequest request
+            @Valid @RequestBody SubmitResolutionRequest request,
+            Authentication authentication
     ) {
 
         return ResponseEntity.ok(
-                caseService.submitResolution(caseId, request)
+                caseService.submitResolution(
+                        caseId,
+                        authentication.getName(),
+                        request
+                )
         );
     }
+
     @PatchMapping("/{caseId}/approve")
-    public ResponseEntity<InvestigationCaseResponse>
-    approveResolution(
+    public ResponseEntity<InvestigationCaseResponse> approveResolution(
             @PathVariable Long caseId,
-            @Valid @RequestBody ReviewResolutionRequest request
+            @Valid @RequestBody ReviewResolutionRequest request,
+            Authentication authentication
     ) {
 
         return ResponseEntity.ok(
-                caseService.approveResolution(caseId, request)
+                caseService.approveResolution(
+                        caseId,
+                        authentication.getName(),
+                        request
+                )
         );
     }
+
     @PatchMapping("/{caseId}/reject")
-    public ResponseEntity<InvestigationCaseResponse>
-    rejectResolution(
+    public ResponseEntity<InvestigationCaseResponse> rejectResolution(
             @PathVariable Long caseId,
-            @Valid @RequestBody ReviewResolutionRequest request
+            @Valid @RequestBody ReviewResolutionRequest request,
+            Authentication authentication
     ) {
 
         return ResponseEntity.ok(
-                caseService.rejectResolution(caseId, request)
+                caseService.rejectResolution(
+                        caseId,
+                        authentication.getName(),
+                        request
+                )
         );
     }
 }

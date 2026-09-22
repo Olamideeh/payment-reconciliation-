@@ -58,6 +58,7 @@ public class InvestigationCaseService {
     @Transactional
     public InvestigationCaseResponse startInvestigation(
             Long caseId,
+            String authenticatedOfficer,
             StartInvestigationRequest request
     ) {
 
@@ -76,11 +77,9 @@ public class InvestigationCaseService {
         }
 
         investigationCase.setStatus(CaseStatus.UNDER_REVIEW);
+        investigationCase.setInvestigatedBy(authenticatedOfficer);
         investigationCase.setInvestigationNote(
-                request.investigationNote()
-        );
-        investigationCase.setInvestigatedBy(
-                request.officer()
+                request.getInvestigationNote()
         );
 
         InvestigationCase savedCase =
@@ -88,10 +87,10 @@ public class InvestigationCaseService {
 
         return mapToResponse(savedCase);
     }
-
     @Transactional
     public InvestigationCaseResponse submitResolution(
             Long caseId,
+            String authenticatedOfficer,
             SubmitResolutionRequest request
     ) {
 
@@ -115,13 +114,8 @@ public class InvestigationCaseService {
                 request.proposedResolution()
         );
 
-        investigationCase.setSubmittedBy(
-                request.submittedBy()
-        );
-
-        investigationCase.setStatus(
-                CaseStatus.PENDING_APPROVAL
-        );
+        investigationCase.setSubmittedBy(authenticatedOfficer);
+        investigationCase.setStatus(CaseStatus.PENDING_APPROVAL);
 
         InvestigationCase savedCase =
                 caseRepository.save(investigationCase);
@@ -131,11 +125,13 @@ public class InvestigationCaseService {
     @Transactional
     public InvestigationCaseResponse approveResolution(
             Long caseId,
+            String authenticatedAdmin,
             ReviewResolutionRequest request
     ) {
 
         return reviewResolution(
                 caseId,
+                authenticatedAdmin,
                 request,
                 CaseStatus.APPROVED
         );
@@ -144,11 +140,13 @@ public class InvestigationCaseService {
     @Transactional
     public InvestigationCaseResponse rejectResolution(
             Long caseId,
+            String authenticatedAdmin,
             ReviewResolutionRequest request
     ) {
 
         return reviewResolution(
                 caseId,
+                authenticatedAdmin,
                 request,
                 CaseStatus.REJECTED
         );
@@ -156,6 +154,7 @@ public class InvestigationCaseService {
 
     private InvestigationCaseResponse reviewResolution(
             Long caseId,
+            String authenticatedAdmin,
             ReviewResolutionRequest request,
             CaseStatus decision
     ) {
@@ -176,16 +175,16 @@ public class InvestigationCaseService {
             );
         }
 
-        if (investigationCase.getSubmittedBy()
-                .equalsIgnoreCase(request.reviewedBy())) {
-
+        if (authenticatedAdmin.equalsIgnoreCase(
+                investigationCase.getSubmittedBy()
+        )) {
             throw new IllegalStateException(
                     "The maker cannot approve or reject their own resolution"
             );
         }
 
         investigationCase.setStatus(decision);
-        investigationCase.setReviewedBy(request.reviewedBy());
+        investigationCase.setReviewedBy(authenticatedAdmin);
         investigationCase.setReviewComment(
                 request.reviewComment()
         );
