@@ -4,6 +4,7 @@ import com.example.payrecon.dto.InvestigationCaseResponse;
 import com.example.payrecon.entity.InvestigationCase;
 import com.example.payrecon.entity.ReconciliationResult;
 import com.example.payrecon.enums.CaseStatus;
+import com.example.payrecon.exception.ResourceNotFoundException;
 import com.example.payrecon.repository.InvestigationCaseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -65,7 +66,7 @@ public class InvestigationCaseService {
         InvestigationCase investigationCase =
                 caseRepository.findById(caseId)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new ResourceNotFoundException(
                                         "Investigation case not found"
                                 )
                         );
@@ -97,7 +98,7 @@ public class InvestigationCaseService {
         InvestigationCase investigationCase =
                 caseRepository.findById(caseId)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new ResourceNotFoundException(
                                         "Investigation case not found"
                                 )
                         );
@@ -162,7 +163,7 @@ public class InvestigationCaseService {
         InvestigationCase investigationCase =
                 caseRepository.findById(caseId)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new ResourceNotFoundException(
                                         "Investigation case not found"
                                 )
                         );
