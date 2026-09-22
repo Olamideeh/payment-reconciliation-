@@ -1,0 +1,11 @@
+package com.example.payrecon.enums;
+
+public enum AuditAction {
+
+    CSV_UPLOADED,
+    RECONCILIATION_RUN,
+    INVESTIGATION_STARTED,
+    RESOLUTION_SUBMITTED,
+    RESOLUTION_APPROVED,
+    RESOLUTION_REJECTED
+}

@@ -13,11 +13,13 @@ import com.example.payrecon.dto.StartInvestigationRequest;
 import java.util.List;
 import com.example.payrecon.dto.SubmitResolutionRequest;
 import com.example.payrecon.dto.ReviewResolutionRequest;
+import com.example.payrecon.enums.AuditAction;
 @Service
 @RequiredArgsConstructor
 public class InvestigationCaseService {
 
     private final InvestigationCaseRepository caseRepository;
+    private final AuditService auditService;
 
     @Transactional(readOnly = true)
     public List<InvestigationCaseResponse> getCases(
@@ -85,8 +87,17 @@ public class InvestigationCaseService {
 
         InvestigationCase savedCase =
                 caseRepository.save(investigationCase);
+        auditService.record(
+                AuditAction.INVESTIGATION_STARTED,
+                "INVESTIGATION_CASE",
+                savedCase.getId(),
+                authenticatedOfficer,
+                "Investigation started"
+        );
 
         return mapToResponse(savedCase);
+
+
     }
     @Transactional
     public InvestigationCaseResponse submitResolution(
@@ -120,6 +131,13 @@ public class InvestigationCaseService {
 
         InvestigationCase savedCase =
                 caseRepository.save(investigationCase);
+        auditService.record(
+                AuditAction.RESOLUTION_SUBMITTED,
+                "INVESTIGATION_CASE",
+                savedCase.getId(),
+                authenticatedOfficer,
+                "Resolution submitted for Admin approval"
+        );
 
         return mapToResponse(savedCase);
     }
@@ -192,6 +210,18 @@ public class InvestigationCaseService {
 
         InvestigationCase savedCase =
                 caseRepository.save(investigationCase);
+        AuditAction auditAction =
+                decision == CaseStatus.APPROVED
+                        ? AuditAction.RESOLUTION_APPROVED
+                        : AuditAction.RESOLUTION_REJECTED;
+
+        auditService.record(
+                auditAction,
+                "INVESTIGATION_CASE",
+                savedCase.getId(),
+                authenticatedAdmin,
+                "Resolution " + decision.name().toLowerCase()
+        );
 
         return mapToResponse(savedCase);
     }

@@ -63,6 +63,10 @@ public class SecurityConfig {
                                 "ADMIN",
                                 "OPERATIONS_OFFICER"
                         )
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/audit-logs/**"
+                        ).hasRole("ADMIN")
 
                         // Every other endpoint requires login
                         .anyRequest().authenticated()
