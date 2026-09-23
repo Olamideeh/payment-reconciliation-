@@ -16,14 +16,24 @@ import com.example.payrecon.service.ReconciliationEngineService;
 import com.example.payrecon.dto.ReconciliationSummaryResponse;
 import com.example.payrecon.service.ReconciliationQueryService;
 import java.util.List;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/api/reconciliations")
 @RequiredArgsConstructor
+@Tag(
+        name = "Reconciliation",
+        description = "Upload transaction files, run reconciliation and view results"
+)
 public class ReconciliationController {
 
     private final ReconciliationUploadService uploadService;
     private final ReconciliationEngineService engineService;
     private final ReconciliationQueryService queryService;
+    @Operation(
+            summary = "Upload reconciliation files",
+            description = "Operations Officer uploads internal and provider CSV files"
+    )
     @PostMapping(
             value = "/upload",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -61,6 +71,10 @@ public class ReconciliationController {
                 HttpStatus.CREATED
         );
     }
+    @Operation(
+            summary = "Run reconciliation",
+            description = "Compares internal and provider transactions for the selected batch"
+    )
     @PostMapping("/{batchId}/run")
     public ResponseEntity<List<ReconciliationResultResponse>>
     runReconciliation(@PathVariable Long batchId) {
@@ -100,6 +114,10 @@ public class ReconciliationController {
                 result.isRequiresInvestigation()
         );
     }
+    @Operation(
+            summary = "View reconciliation summary",
+            description = "Returns totals, match rate and mismatch counts for a batch"
+    )
     @GetMapping("/{batchId}/summary")
     public ResponseEntity<ReconciliationSummaryResponse>
     getSummary(@PathVariable Long batchId) {

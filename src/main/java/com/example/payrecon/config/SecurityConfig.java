@@ -68,6 +68,13 @@ public class SecurityConfig {
                                 "/api/audit-logs/**"
                         ).hasRole("ADMIN")
 
+                        .requestMatchers(
+                                "/actuator/health",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
                         // Every other endpoint requires login
                         .anyRequest().authenticated()
                 )

@@ -12,16 +12,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/investigation-cases")
 @RequiredArgsConstructor
+@Tag(
+        name = "Investigation Cases",
+        description = "Maker-checker workflow for unresolved reconciliation cases"
+)
 public class InvestigationCaseController {
 
     private final InvestigationCaseService caseService;
-
+    @Operation(
+            summary = "List investigation cases",
+            description = "Admin and Operations Officer can filter and paginate cases"
+    )
     @GetMapping
     public ResponseEntity<Page<InvestigationCaseResponse>> getCases(
             @RequestParam(required = false)
@@ -42,6 +51,10 @@ public class InvestigationCaseController {
                 )
         );
     }
+    @Operation(
+            summary = "Start an investigation",
+            description = "Operations Officer moves an OPEN case to UNDER_REVIEW"
+    )
     @PatchMapping("/{caseId}/start")
     public ResponseEntity<InvestigationCaseResponse> startInvestigation(
             @PathVariable Long caseId,
@@ -57,7 +70,10 @@ public class InvestigationCaseController {
                 )
         );
     }
-
+    @Operation(
+            summary = "Submit a proposed resolution",
+            description = "Operations Officer submits a case for Admin approval"
+    )
     @PatchMapping("/{caseId}/submit")
     public ResponseEntity<InvestigationCaseResponse> submitResolution(
             @PathVariable Long caseId,
@@ -73,7 +89,10 @@ public class InvestigationCaseController {
                 )
         );
     }
-
+    @Operation(
+            summary = "Approve a resolution",
+            description = "Admin approves a resolution waiting for approval"
+    )
     @PatchMapping("/{caseId}/approve")
     public ResponseEntity<InvestigationCaseResponse> approveResolution(
             @PathVariable Long caseId,
@@ -89,7 +108,10 @@ public class InvestigationCaseController {
                 )
         );
     }
-
+    @Operation(
+            summary = "Reject a resolution",
+            description = "Admin rejects a resolution waiting for approval"
+    )
     @PatchMapping("/{caseId}/reject")
     public ResponseEntity<InvestigationCaseResponse> rejectResolution(
             @PathVariable Long caseId,
@@ -105,4 +127,5 @@ public class InvestigationCaseController {
                 )
         );
     }
+
 }
