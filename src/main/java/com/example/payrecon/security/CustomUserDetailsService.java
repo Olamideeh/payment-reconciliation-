@@ -33,8 +33,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .disabled(!appUser.isEnabled())
                 .build();
     }
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }

@@ -95,7 +95,7 @@ public class InvestigationCaseService {
                 caseRepository.findById(caseId)
                         .orElseThrow(() ->
                                 new ResourceNotFoundException(
-                                        "Investigation case not found"
+                                        "Investigation case not found: " + caseId
                                 )
                         );
 
@@ -113,6 +113,7 @@ public class InvestigationCaseService {
 
         InvestigationCase savedCase =
                 caseRepository.save(investigationCase);
+
         auditService.record(
                 AuditAction.INVESTIGATION_STARTED,
                 "INVESTIGATION_CASE",
@@ -122,7 +123,6 @@ public class InvestigationCaseService {
         );
 
         return mapToResponse(savedCase);
-
 
     }
     @Transactional
