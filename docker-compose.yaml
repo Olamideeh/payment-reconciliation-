@@ -10,6 +10,32 @@ services:
       - "5434:5432"
     volumes:
       - payrecon_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U payrecon_user -d payrecon_db"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: payrecon-app
+    container_name: payrecon-app
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/payrecon_db"
+      SPRING_DATASOURCE_USERNAME: "payrecon_user"
+      SPRING_DATASOURCE_PASSWORD: "payrecon_password"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
 
   adminer:
     image: adminer:latest
@@ -17,7 +43,9 @@ services:
     ports:
       - "8083:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   payrecon_postgres_data:
